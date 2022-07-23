@@ -1,6 +1,0 @@
-D:\SwitchDrive_HEIG\SEM8\TB\06Implementation\KeystrokeAPI\Keystroke.API\lib\net35\KeystrokeAPI.dll
-D:\SwitchDrive_HEIG\SEM8\TB\06Implementation\KeystrokeAPI\Keystroke.API\lib\net35\KeystrokeAPI.pdb
-D:\SwitchDrive_HEIG\SEM8\TB\06Implementation\KeystrokeAPI\Keystroke.API\obj\Release 3.5\Keystroke.API.csproj.AssemblyReference.cache
-D:\SwitchDrive_HEIG\SEM8\TB\06Implementation\KeystrokeAPI\Keystroke.API\obj\Release 3.5\Keystroke.API.csproj.CoreCompileInputs.cache
-D:\SwitchDrive_HEIG\SEM8\TB\06Implementation\KeystrokeAPI\Keystroke.API\obj\Release 3.5\KeystrokeAPI.dll
-D:\SwitchDrive_HEIG\SEM8\TB\06Implementation\KeystrokeAPI\Keystroke.API\obj\Release 3.5\KeystrokeAPI.pdb

