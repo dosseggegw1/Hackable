@@ -1,0 +1,80 @@
+#!/bin/bash
+cd /sys/kernel/config/usb_gadget/
+mkdir -p hackable
+cd hackable
+echo 0x1d6b > idVendor # Linux Foundation
+echo 0x0104 > idProduct # Multifunction Composite Gadget
+echo 0x0419 > bcdDevice
+echo 0x0200 > bcdUSB # USB2
+
+echo 0xEF > bDeviceClass
+echo 0x02 > bDeviceSubClass
+echo 0x01 > bDeviceProtocol
+
+mkdir -p strings/0x409
+echo "fedcba9876543210" > strings/0x409/serialnumber
+echo "HEIG Inc" > strings/0x409/manufacturer
+echo "Hackable USB Device" > strings/0x409/product
+
+mkdir -p configs/c.1/strings/0x409
+echo "multifunction gadget" > configs/c.1/strings/0x409/configuration
+echo 250 > configs/c.1/MaxPower
+echo 0x80 > configs/c.1/bmAttributes
+
+# Add functions here
+# Fonctionnalité HID
+modprobe usb_f_hid
+mkdir -p functions/hid.usb0
+echo 1 > functions/hid.usb0/protocol
+echo 0 > functions/hid.usb0/subclass
+echo 8 > functions/hid.usb0/report_length
+echo -ne \\x05\\x01\\x09\\x06\\xa1\\x01\\x05\\x07\\x19\\xe0\\x29\\xe7\\x15\\x00\\x25\\x01\\x75\\x01\\x95\\x08\\x81\\x02\\x95\\x01\\x75\\x08\\x81\\x03\\x95\\x05\\x75\\x01\\x05\\x08\\x19\\x01\\x29\\x05\\x91\\x02\\x95\\x01\\x75\\x03\\x91\\x03\\x95\\x06\\x75\\x08\\x15\\x00\\x25\\x65\\x05\\x07\\x19\\x00\\x29\\x65\\x81\\x00\\xc0 > functions/hid.usb0/report_desc
+ln -s functions/hid.usb0 configs/c.1/
+
+# Fonctionnalité Stockage
+modprobe usb_f_mass_storage
+FILE=/usbdisk.img   
+mkdir -p ${FILE/img/d}
+mount -o loop,ro, -t vfat $FILE ${FILE/img/d} # FOR IMAGE CREATED WITH DD
+
+mkdir -p functions/mass_storage.usb0
+echo 1 > functions/mass_storage.usb0/stall
+echo 0 > functions/mass_storage.usb0/lun.0/cdrom
+echo 1 > functions/mass_storage.usb0/lun.0/removable
+echo 0 > function/mass_storage.usb0/lun.0/ro
+echo 0 > functions/mass_storage.usb0/lun.0/nofua
+echo $FILE > functions/mass_storage.usb0/lun.0/file     #change lien
+ln -s functions/mass_storage.usb0 configs/c.1/
+
+# Fonctionnalité Ethernet
+modprobe usb_f_rndis
+HOST_ADDRESS="1a:55:89:a2:69:43"
+DEV_ADDRESS="1a:55:89:a2:69:44"
+mkdir -p functions/rndis.usb0
+echo $HOST_ADDRESS > functions/rndis.usb0/host_addr
+echo $DEV_ADDRESS  > functions/rndis.usb0/dev_addr
+# https://msdn.microsoft.com/en-us/windows/hardware/gg463179.aspx
+echo RNDIS   > functions/rndis.usb0/os_desc/interface.rndis/compatible_id
+echo 5162001 > functions/rndis.usb0/os_desc/interface.rndis/sub_compatible_id
+
+# Configuration Windows 
+cd os_desc
+echo 1 > use
+echo 0xcd > b_vendor_code
+echo MSFT100 > qw_sign
+cd ../
+
+# ln des différents fonctionnalités 
+ln -s functions/rndis.usb0 configs/c.1
+ln -s configs/c.1 os_desc
+# End functions
+
+
+echo "Attaching gadget"
+ls /sys/class/udc > UDC
+
+ifconfig usb0 10.0.0.1 netmask 255.255.255.0 up
+sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+sudo nft add table nat
+sudo nft 'add chain nat postrouting { type nat hook postrouting priority 100 ; }'
+sudo nft add rule nat postrouting meta oifname "wlan0" masquerade

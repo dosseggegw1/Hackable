@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 """
 # Base code : https://stackoverflow.com/questions/49887540/improve-python-code
 # Comparaison disposition : https://www.sbsupply.eu/blog/what-is-the-difference-between-qwerty-qwerty-nl-azerty-and-qwertz
@@ -9,7 +8,9 @@ HID Keyboard Mapper
 By: Gwendoline Dössegger
 Date: 2022
 
-
+Permet de parser un payload Ducky script et d'injection de frappes pour un clavier Suisse - français.
+S'execute :
+sudo python3 inject.py [payload.dd]
 """
 
 from time import sleep
@@ -18,7 +19,7 @@ import sys
 #Variables
 NULL_CHAR = chr(0)
 
-#Dictionary
+# Caractère simple
 # 0x00 0x00 0x?? 0x00 0x00 0x00 0x00 0x00 | valeur de la touche par défaut
 keys_none = {
 'a': '4', 'b': '5', 'c': '6', 'd': '7', 'e': '8', 'f': '9', 'g': '10', 'h': '11', 'i': '12', 'j': '13', 'k': '14',
@@ -28,6 +29,7 @@ keys_none = {
 '.':'55', '-':'56', '<':'100', ' ':'44', '   ':'43',
 }
 
+# Caractère + SHIFT
 # 0x02 0x00 0x?? 0x00 0x00 0x00 0x00 0x00 | valeur de la touche si shift cliqué
 keys_maj = {
 'A': '4', 'B': '5', 'C': '6', 'D': '7', 'E': '8', 'F': '9', 'G': '10', 'H': '11', 'I': '12', 'J': '13', 'K': '14',
@@ -37,17 +39,19 @@ keys_maj = {
 ':':'55', '_':'56', '>':'100',
 }
 
+# Caractère + ALT GR
 # 0x40 0x00 0x?? 0x00 0x00 0x00 0x00 0x00 | valeur de la touche si alt gr cliqué
 keys_alt = {
 '¦':'30', '@':'31', '#':'32', '¼':'33', '½':'34', '¬':'35', '|':'36', '¢':'37', ']':'38', '}':'39', '€':'8', '[':'47',
 ']':'48', '}':'50', '{':'52', '\\':'100',
 }
 
+# Caractères spéciaux qui nécessite un enchaînement précis.
 keys_special = { # Enchainement de touche spécial
 '´':'write_report(chr(64)+NULL_CHAR+chr(45)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(chr(64)+NULL_CHAR+chr(45)+NULL_CHAR*5)\n',  # AFFICHE ´´ au lieu de ´
-'~':'write_report(chr(64)+NULL_CHAR+chr(46)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(NULL_CHAR*2 +chr(41)+NULL_CHAR*5)', # souci de ~+espace au lieu de ~
-'^':'write_report(NULL_CHAR*2 +chr(46)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(NULL_CHAR*2 +chr(41)+NULL_CHAR*5)', # SEE APRES ^+espace au lieu de ^
-'`':'write_report(chr(2)+NULL_CHAR+chr(46)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(NULL_CHAR*2 +chr(41)+NULL_CHAR*5)', # SEE APRES `+espace au lieu de `
+'~':'write_report(chr(64)+NULL_CHAR+chr(46)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(NULL_CHAR*2 +chr(41)+NULL_CHAR*5)',         # ~+espace pour ~
+'^':'write_report(NULL_CHAR*2 +chr(46)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(NULL_CHAR*2 +chr(41)+NULL_CHAR*5)',              # ^+espace pour ^
+'`':'write_report(chr(2)+NULL_CHAR+chr(46)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)\nwrite_report(NULL_CHAR*2 +chr(41)+NULL_CHAR*5)',          # `+espace pour `
 
 #ïÏíÍìÌîÎĩĨ
 'ï':'write_report(NULL_CHAR*2 +chr(48)+NULL_CHAR*5)\nwrite_report(NULL_CHAR*2 +chr(12)+NULL_CHAR*5)',
@@ -113,7 +117,7 @@ keys_special = { # Enchainement de touche spécial
 'Ñ':'write_report(chr(64)+NULL_CHAR+chr(46)+NULL_CHAR*5)\nwrite_report(chr(2)+NULL_CHAR+chr(17)+NULL_CHAR*5)',
 }
 
-
+# Touche de modifications
 keys_cmd = {
 'NONE'  : 'write_report(NULL_CHAR*2',
 'LCTRL' : 'write_report(chr(1)+NULL_CHAR',
@@ -126,6 +130,7 @@ keys_cmd = {
 'RMETA' : 'write_report(chr(128)+NULL_CHAR',
 }
 
+# Touche spéciales
 # 0x00 0x00 0x?? 0x00 0x00 0x00 0x00 0x00 | valeur de la touche par défaut
 keys_mod = {
 'F1' :  '58',
@@ -140,29 +145,32 @@ keys_mod = {
 'F10' : '67',
 'F11' : '68',
 'F12' : '69',
-'SCROLL_LOCK' : '71',
-'PAUSE' : '72',
-'INSERT' : '73',
-'HOME' : '74',
+'SCROLLLOCK' : '71', 
+'PAUSE' : '72', 
+'BREAK' : '72',
+'INSERT' : '73', 
+'HOME' : '74', 
 'PAGE_UP' : '75',
 'DELETE' : '76',
-'END' : '77',
-'PAGE_DOWN' : '78',
+'END' : '77', 
+'PAGE_DOWN' : '78', 
 'ARROW_R' : '79',
 'ARROW_L' : '80',
 'ARROW_D' : '81',
 'ARROW_U' : '82',
-'APP' : '101',
-'ESC' : '41',
-'BACKSPACE' : '42',
-'TAB':'43',
-'CAPSLOCK':'57',
-'PRINT':'70',
-'ENTER':'40',
+'NUMLOCK' : '83', 
+'APP' : '101', 
+'ESC' : '41', 
+'BACKSPACE' : '42', 
+'TAB':'43', 
+'CAPSLOCK':'57', 
+'PRINT':'70', 
+'ENTER':'40', 
 'ESPACE':'44',
 'SPACE':'44',
-'RETURN':'40',
+'RETURN':'40', 
 }
+
 
 # Fonction qui transmet les HID codes à la victime (représente le HID keyboard)
 def write_report(report):
@@ -182,7 +190,7 @@ def sendString(letter):
 
 defaultDelay = 0
 
-# Quand CTRL, ALT,
+# Quand commande CTRL, ALT, SHIFT, GUI
 def get_str(cmd,key):
     if not key:
         return keys_cmd[cmd] + '+NULL_CHAR*6)\nwrite_report(NULL_CHAR * 8)'
@@ -203,13 +211,14 @@ def get_str(cmd,key):
         return keys_special[key]
 
 
-
+# Stock la commande 
 translated_list = []
 
+# Récupère la commande désirée
 def parseLine(line):
     global defaultDelay
 
-    # WINDOWS + [..]
+    # WINDOWS (Exécuter(Run) Windows)
     if line == 'WINDOWS':
         translated_list.append(keys_cmd['LMETA'] + '+chr(21)+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)')
 
@@ -233,39 +242,48 @@ def parseLine(line):
         str = get_str('LSHIFT', line[6:])
         translated_list.append(str)
 
-    elif line == 'MENU': # SHIFT + F10 -> vaut clic droit sur windows
+    # SHIFT + F10 -> vaut clic droit sur windows
+    elif line == 'MENU':
         translated_list.append(keys_cmd['LSHIFT']+'+chr('+keys_mod['f10']+')+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)')
 
     # Touche de commandes
-    elif line == 'TAB' or line == 'ENTER' or line == 'RETURN' or line == 'ESC' or line == 'BACKSPACE' or \
-         line == 'CAPSLOCK' or line == 'PRINT' or line == 'SCROLL_LOCK' or line == 'PAUSE' or line == 'INSERT' or \
+    elif line == 'TAB' or line == 'ENTER' or line == 'RETURN' or line == 'ESC' or line == 'BACKSPACE' or line == 'NUMLOCK' or\
+         line == 'CAPSLOCK' or line == 'PRINT' or line == 'SCROLLLOCK' or line == 'PAUSE' or line == 'BREAK' or line == 'INSERT' or \
          line == 'HOME' or line == 'PAGE_UP' or line == 'DELETE' or line == 'END' or line == 'PAGE_DOWN' or \
-         line == 'APP' or line == 'ARROW_R' or line == 'ARROW_L' or line == 'ARROW_D' or line == 'ARROW_U' or line == 'ESPACE':
+         line == 'APP' or line == 'ARROW_R' or line == 'ARROW_L' or line == 'ARROW_D' or line == 'ARROW_U' or line == 'ESPACE' or line == 'SPACE' :
         translated_list.append(keys_cmd['NONE'] +'+chr('+keys_mod[line]+')+NULL_CHAR*5)\nwrite_report(NULL_CHAR * 8)')
 
     # STRING + [ a…z A…Z 0…9 !…) `~+=_-“‘;:<,>.?[{]}/|!@#$%^&*() ]
-    elif line.startswith('STRING'):  # part du principe que sinon c'est STRING ...
+    elif line.startswith('STRING'):
         for letter in line[7:]:
             translated_list.append(sendString(letter))
 
+
 if __name__ == '__main__':
     try:
-        file_name = "payload.dd"
+        # Récupère le nom du payload
+        file_name = "none"
         if len(sys.argv) > 1 :
             file_name = sys.argv[1]
 
+        # Ouvre le payload et le parse
         with open(file_name,"r",encoding='utf-8') as f:
             lines = f.read().splitlines()
             for line in lines:
+                
+                # Si la ligne est un commentaire
                 if line.startswith('REM'):
                     pass
 
+                # Définit un délai général entre les actions
                 elif line.startswith("DEFAULTDELAY"):
                     defaultDelay = int(line[13:]) * 10
 
+                # Attente entre deux commandes
                 elif line.startswith('DELAY'):
                     sleep(float(line[6:]) / 1000)
 
+                # Pour toutes autres commandes 
                 else :
                     parseLine(line)
                     exec("\n".join(translated_list))

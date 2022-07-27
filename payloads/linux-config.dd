@@ -1,0 +1,9 @@
+REM Gwendoline Dossegger
+REM Désactive les interfaces Wi-Fi d'une machine Kubuntu à l'aide de nmcli
+DEFAULTDELAY 50
+ALT ESPACE
+STRING Konsole
+ENTER
+STRING nmcli radio wifi off
+ENTER
+ALT F4

