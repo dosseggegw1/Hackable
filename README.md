@@ -89,19 +89,36 @@ sudo pip3 install netifaces
 ```sh
 # Executer l'application
 sudo python3 hackable.py
+
+# ---------------------------------------------------------------------------------- #
+
+    $$\   $$\                     $$\                 $$\       $$\ 
+    $$ |  $$ |                    $$ |                $$ |      $$ | 
+    $$ |  $$ | $$$$$$\   $$$$$$$\ $$ |  $$\  $$$$$$\  $$$$$$$\  $$ | $$$$$$\  
+    $$$$$$$$ | \____$$\ $$  _____|$$ | $$  | \____$$\ $$  __$$\ $$ |$$  __$$\   
+    $$  __$$ | $$$$$$$ |$$ /      $$$$$$  /  $$$$$$$ |$$ |  $$ |$$ |$$$$$$$$ |   
+    $$ |  $$ |$$  __$$ |$$ |      $$  _$$<  $$  __$$ |$$ |  $$ |$$ |$$   ____|    
+    $$ |  $$ |\$$$$$$$ |\$$$$$$$\ $$ | \$$\ \$$$$$$$ |$$$$$$$  |$$ |\$$$$$$$\    
+    \__|  \__| \_______| \_______|\__|  \__| \_______|\_______/ \__| \_______|  
+    
+Scénarios d'attaques possibles :
+ [1] - Injection de frappes
+ [2] - Keylogger [Windows|Linux]
+ [3] - MITM Ethernet - Écoute du réseau
+ [4] - MITM USB - Attaque sur un smartphone
+ [5] - Configurer la victime
+ [0] - Quitter
+
+Quelle option voulez-vous [0..5] ?
 ```
-
-IMG appli
-
-6 options..
 
 ----
 
-### Injection de frappes
+### [1] Injection de frappes
 
 On utilise le code `inject.py` qui permet de transmettre des frappes. Le code des touches correspond à un clavier suisse version française.
 
-Pour injecter des frappes, nous utilisons le langage Ducky Script dont les syntaxes autorisées sont décrites dans le fichier `payloads/READme.md`.
+Pour injecter des frappes, nous utilisons le langage Ducky Script dont les syntaxes autorisées sont décrites dans le fichier `payloads/README.md`.
 
 La Raspberry Pi ou l'équipement qui utilise cette application doit être détecté comme gadget HID et avoir accès à `/dev/hid0`. 
 
@@ -112,11 +129,55 @@ sudo python3 inject.py [payload_duckyscript]
 
 ------
 
-### Keylogger
+### [2] Keylogger
 
 Trois versions ont été créées. Ils sont tous stocké dans le répertoire Stockage_Pi et doivent être copiés dans le stockage de la Pi. 
 
-- 
+- .keylogger-smtp.py 		    Keylogger Linux qui envoi les frappes par email
+- .keylogger.py                       Keylogger Linux qui enregistre les frappes sur la Pi
+- KeystrokeAPI                       Keylogger Windows qui enregistre les frappes sur la Pi
+
+
+
+> Github du KeystrokeAPI : https://github.com/dosseggegw1/KeystrokeAPI
+
+---
+
+### [3] MITM Ethernet - Écoute du réseau
+
+À travers l'application, on peut exécuter trois écoutes du réseau :
+
+```sh
+[1] sudo tshark -i usb0 -tttt -w pcap/tshark.pcap
+[2] sudo tcpdump -i usb0 -tttt -w pcap/tcpdump.pcap
+[3] sudo tcpdump -i usb0 -tttt -w pcap/tcpdump_443.pcap port 443
+```
+
+---
+
+### [4] MITM USB - Attaque sur smartphone
+
+Lorsque la Pi est branchée à un smartphone, on peut réaliser les actions suivantes :
+
+```sh
+[1] Injection de frappes 				# On peut choisir un payload
+[2] [Samsung Android 9] Récupération de données via un email
+[3] [Indosponible] Scan USB communications
+```
+
+---
+
+### [5] Configurer la victime
+
+Lorsqu'on branche la Pi a une victime, nous effectuons une configuration de cette dernière afin de ne pas être détectée et/ou de simplifier les attaques précédentes.
+
+```sh	
+# On désactive Windef et l'interface Wifi et on envoie le Path du stockage de la Pi par email
+[1] Windows Désactive WinDef + Wi-Fi interface + Get Path Stockage Pi by Email
+
+# On désactive les interfaces Wifi
+[2] Kubuntu Désactive interface WiFi & force réseau ethernet
+```
 
 
 

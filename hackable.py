@@ -13,6 +13,8 @@ comme gadget : HID, Stockage et Ethernet.
 
 Le programme est lancé sur une Raspberry Pi Zero 2W via la commande
 > $ sudo python3 main.py
+
+Attention l'application nécessite l'installation de pip3 et de netifaces.
 """
 import os
 import signal
@@ -54,16 +56,16 @@ menu = {
     '3': ['MITM Ethernet - Écoute du réseau', {
         '1': ['Tshark - Ecoute l\'interface usb0', ['sudo','tshark', '-i', 'usb0', '-w', '/home/pi/pcap/tshark.pcap']],
         '2': ['Tcpdump - Ecoute de l\'intrface usb0', ['sudo', 'tcpdump', '-i', 'usb0', '-tttt', '-w', 'pcap/tcpdump.pcap']],
-        '3': ['Tcpdump - Ecoute de l\'intrface usb0 filtrer port 80', ['sudo', 'tcpdump', '-i', 'usb0', '-tttt', '-w', 'pcap/tcpdump_443.pcap', 'port', '443']],
+        '3': ['Tcpdump - Ecoute de l\'intrface usb0 filtrer port 443', ['sudo', 'tcpdump', '-i', 'usb0', '-tttt', '-w', 'pcap/tcpdump_443.pcap', 'port', '443']],
     }],
     '4': ['MITM USB - Attaque sur un smartphone', {
         '1': ['Injection de frappes', 'payloads/'],
         '2': ['[Samsung Android 9] Récupération de données - Copie d\'une image envoyée par email', 'payloads/android-mail.dd'],
-        '3': ['[Indisponible] Scan USB communication']
+        '3': ['[Indisponible] Scan USB communications']
     }],
     '5': ['Configurer la victime', {
         '1': ['Windows - Désactive WinDef + Wi-Fi interface + Get Path Stockage Pi by Email', 'payloads/windows-config.dd'],
-        '2': ['Kubuntu - Désactive interface WiFi & force réseau ethernet', 'payloads/linux-network.dd'],
+        '2': ['Kubuntu - Désactive interface WiFi & force réseau ethernet', 'payloads/linux-config.dd'],
     }],
 }
 
